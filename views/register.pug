@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    h2 Registro de usuarios
+    form(action="/users/create", method="POST") 
+        .mb-3 
+            label.form.label(for="username") Nombre de usuario
+            input.form-control(type="text" name="username" id="username") 
+
+        .mb-3 
+            label.form.label(for="email") Email
+            input.form-control(type="email" name="email" id="email") 
+
+        .mb-3 
+            label.form.label(for="password") Password
+            input.form-control(type="password" name="password" id="password") 
+        input.btn.btn-info(type="submit" value="Enviar")

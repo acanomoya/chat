@@ -1,0 +1,63 @@
+extends layout
+
+block content
+    .chat.mt-4.card.shadow
+        .header
+            h2 Chat 
+            h3#numUsers
+        .main 
+            ul#mensajes 
+                each message in messages.reverse()
+                    if message.user._id.toString() === user._id.toString()
+                        li.owner #{message.user.username}: #{message.text}
+                    else 
+                        li #{message.username}: #{message.text}
+        .footer 
+            p Usuario Activo : 
+                span.fw-bold #{user.username}
+                .formulario 
+                    label.form-label Mensaje
+                    input#inputMensaje.form-control(type="text")
+                    button#btnEnviar.btn.btn-info Enviar
+    script.
+        const socket = io();
+
+        const btnEnviar = document.getElementById('btnEnviar');
+        const inputMensaje = document.getElementById('inputMensaje');
+        const mensajes = document.getElementById('mensajes')
+        const numUsers = document.getElementById('numUsers')
+
+        const username = "#{user.username}";
+        const user_id = "#{user._id}";
+
+
+        btnEnviar.addEventListener('click', ()=>{
+            const mensaje = inputMensaje.value
+
+            if(!mensaje) return
+
+            const obj = {
+                message: mensaje,
+                username,
+                user_id
+            }
+
+            socket.emit('chat_message', obj);
+            inputMensaje.value = "";
+
+        });
+
+        socket.on('chat_message', (data)=>{
+            let newList = document.createElement('li')
+            newList.innerText = `${data.user.username}: ${data.text}`
+
+            if(user_id === data.user._id){
+                newList.classList.add('owner');
+            }
+
+            mensajes.append(newList);
+        });
+
+        socket.on('chat_users', (data)=>{
+            numUsers.innerText = `Número de usuarios conectados ${data}` 
+        });
